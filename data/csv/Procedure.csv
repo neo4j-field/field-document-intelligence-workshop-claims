@@ -1,0 +1,9 @@
+code,description
+99213,"Office or other outpatient visit, low complexity"
+99214,"Office or other outpatient visit, moderate complexity"
+93000,"Electrocardiogram (ECG/EKG), routine with interpretation"
+71045,"Chest X-ray, single view"
+80053,Comprehensive metabolic panel (blood test)
+80061,Lipid panel (cholesterol test)
+99283,"Emergency department visit, moderate severity"
+73721,"MRI, joint of lower extremity without contrast"

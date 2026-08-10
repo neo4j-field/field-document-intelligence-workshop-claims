@@ -1,0 +1,9 @@
+npi,name,specialty,provider_type
+1841234501,"Dr. Sarah Jenkins, MD",Internal Medicine,Individual
+1841234502,"Dr. Robert Chen, MD",Cardiology,Individual
+1841234503,"Dr. Emily Taylor, DO",Family Practice,Individual
+1841234504,"Dr. Michael Ross, MD",Orthopedics,Individual
+1841234505,"Dr. Amanda Patel, MD",Pulmonology,Individual
+1841234506,"Dr. David Miller, MD",Gastroenterology,Individual
+1841234507,Metro General Hospital,General Hospital,Organization
+1841234508,Apex Urgent Care,Urgent Care,Organization

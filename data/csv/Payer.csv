@@ -1,0 +1,6 @@
+payer_id,name,plan_type
+PAY-101,Blue Cross Blue Shield,PPO
+PAY-102,Aetna Health,HMO
+PAY-103,UnitedHealthcare,POS
+PAY-104,Cigna Health,PPO
+PAY-105,Medicare Advantage,Medicare
