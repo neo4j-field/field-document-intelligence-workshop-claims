@@ -1,0 +1,137 @@
+{
+  "name": "Health Claims Knowledge Assistant",
+  "description": "An assistant for HealthyHeart Systems to analyze claims, search for providers, find similar patients, and identify providers associated with notes for diagnoses and procedures.",
+  "system_prompt": "You are a Health Claims Knowledge Assistant for HealthyHeart Systems. Provide comprehensive and accurate information for claims analysis, provider search, and patient similarity. Present findings clearly and directly.",
+  "is_private": true,
+  "is_mcp_enabled": false,
+  "tools": [
+    {
+      "name": "Count Claims for Diagnosis",
+      "description": "Counts the number of claims associated with a specific diagnosis description.",
+      "enabled": true,
+      "type": "cypherTemplate",
+      "config": {
+        "template": "MATCH (d:Diagnosis)<-[:INCLUDES_DIAGNOSIS]-(c:Claim) WHERE d.description CONTAINS $diagnosisDescription RETURN count(c) AS claimCount",
+        "parameters": [
+          {
+            "name": "diagnosisDescription",
+            "data_type": "string",
+            "description": "The exact description of the diagnosis to count claims for."
+          }
+        ]
+      }
+    },
+    {
+      "name": "Summarize Provider Activity",
+      "description": "Provides a summary of diagnoses made and procedures recommended by providers through associated claims.",
+      "enabled": true,
+      "type": "cypherTemplate",
+      "config": {
+        "template": "MATCH (p:Provider)<-[:PROVIDED_BY]-(c:Claim) OPTIONAL MATCH (c)-[:INCLUDES_DIAGNOSIS]->(d:Diagnosis) OPTIONAL MATCH (c)-[:HAS_PROCEDURE]->(proc:Procedure) RETURN p.name AS providerName, p.specialty AS specialty, collect(DISTINCT d.description) AS diagnoses, collect(DISTINCT proc.description) AS procedures LIMIT 50",
+        "parameters": []
+      }
+    },
+    {
+      "name": "Count Providers by Specialty",
+      "description": "Counts the number of providers within a given medical specialty.",
+      "enabled": true,
+      "type": "cypherTemplate",
+      "config": {
+        "template": "MATCH (p:Provider {specialty: $specialty}) RETURN count(p) AS providerCount",
+        "parameters": [
+          {
+            "name": "specialty",
+            "data_type": "string",
+            "description": "The exact medical specialty of the providers to count."
+          }
+        ]
+      }
+    },
+    {
+      "name": "Count Providers by Type",
+      "description": "Counts the number of providers of a specific type.",
+      "enabled": true,
+      "type": "cypherTemplate",
+      "config": {
+        "template": "MATCH (p:Provider {providerType: $providerType}) RETURN count(p) AS providerCount",
+        "parameters": [
+          {
+            "name": "providerType",
+            "data_type": "string",
+            "description": "The exact type of provider to count."
+          }
+        ]
+      }
+    },
+    {
+      "name": "Find Providers with Notes for Diagnosis",
+      "description": "Identifies providers who have created notes (chunks) that are associated with a specific diagnosis.",
+      "enabled": true,
+      "type": "cypherTemplate",
+      "config": {
+        "template": "MATCH (p:Provider)-[:__NODE_TO_CHUNK__]->(c:__Chunk__)<-[:__NODE_TO_CHUNK__]-(d:Diagnosis {description: $diagnosisDescription}) RETURN p.name AS providerName, p.specialty AS specialty, collect(DISTINCT c.text) AS associatedNotes LIMIT 5",
+        "parameters": [
+          {
+            "name": "diagnosisDescription",
+            "data_type": "string",
+            "description": "The exact description of the diagnosis."
+          }
+        ]
+      }
+    },
+    {
+      "name": "Find Providers with Notes for Procedure",
+      "description": "Identifies providers who have created notes (chunks) that are associated with a specific procedure.",
+      "enabled": true,
+      "type": "cypherTemplate",
+      "config": {
+        "template": "MATCH (p:Provider)-[:__NODE_TO_CHUNK__]->(c:__Chunk__)<-[:__NODE_TO_CHUNK__]-(proc:Procedure {description: $procedureDescription}) RETURN p.name AS providerName, p.specialty AS specialty, collect(DISTINCT c.text) AS associatedNotes LIMIT 5",
+        "parameters": [
+          {
+            "name": "procedureDescription",
+            "data_type": "string",
+            "description": "The exact description of the procedure."
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search Note Chunks",
+      "description": "Searches for relevant chunks of text (notes) using vector similarity, enriched with associated providers, patients, diagnoses, and procedures.",
+      "enabled": true,
+      "type": "similaritySearch",
+      "config": {
+        "provider": "vertexai",
+        "model": "gemini-embedding-001",
+        "index": "vector_index___Chunk___embedding",
+        "top_k": 10,
+        "dimension": 3072,
+        "post_processing_cypher": "OPTIONAL MATCH (node)<-[:__NODE_TO_CHUNK__]-(p:Provider)\nOPTIONAL MATCH (node)<-[:__NODE_TO_CHUNK__]-(pat:Patient)\nOPTIONAL MATCH (node)<-[:__NODE_TO_CHUNK__]-(d:Diagnosis)\nOPTIONAL MATCH (node)<-[:__NODE_TO_CHUNK__]-(proc:Procedure)\nRETURN node.text AS chunkText, score, collect(DISTINCT p.name) AS providers, collect(DISTINCT pat.name) AS patients, collect(DISTINCT d.description) AS diagnoses, collect(DISTINCT proc.description) AS procedures\nORDER BY score DESC"
+      }
+    },
+    {
+      "name": "Natural Language to Cypher Tool",
+      "description": "A general-purpose, free-form Text-to-Cypher tool that converts natural language questions into Cypher queries, executes them, and returns the results. Use this option when no specialized tool (e.g. for aggregation or domain-specific logic) is more appropriate.",
+      "enabled": true,
+      "type": "text2cypher"
+    },
+    {
+      "name": "Find Patients with Shared Diagnosis",
+      "description": "Find Patients who have filed claims with similar diagnosis",
+      "enabled": true,
+      "type": "cypherTemplate",
+      "config": {
+        "template": "MATCH (p1:Patient {patientId: $patientId})-[:HAS_CLAIM]->(c1:Claim)-[:INCLUDES_DIAGNOSIS]->(d:Diagnosis)<-[:INCLUDES_DIAGNOSIS]-(c2:Claim)<-[:HAS_CLAIM]-(p2:Patient) WHERE p1 <> p2 RETURN p2.firstName, p2.lastName, p2.patientId, COLLECT(DISTINCT d.description) AS sharedDiagnoses LIMIT 10",
+        "parameters": [
+          {
+            "name": "patientId",
+            "data_type": "string",
+            "description": "id for a given patient",
+            "is_optional": true,
+            "default": "\"missing\""
+          }
+        ]
+      }
+    }
+  ]
+}
