@@ -28,4 +28,10 @@ In this way you’ll see how Neo4j is used to connect the unstructured and struc
 
 All that is required to get started is a free instance of Aura. [You can sign up for that here.](https://console-preview.neo4j.io/)
 
+Aura documentation is [available here](https://neo4j.com/docs/aura/).
+
+You can learn more about Neo4j Aura, Knowledge Graphs, Graph Data Science, and GenAI for FREE and hands-on at Neo4j's [Graph Academy](https://graphacademy.neo4j.com/). 
+
 The Document-Intelligence-Workshop-Claims.pdf contains a walkthrough of the actions to take in Aura to accomplish the tasks outline above.
+
+
