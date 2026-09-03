@@ -2,6 +2,8 @@
 
 ### From Unstructured to Structured, Build an Agent Ready Graph with Neo4j
 
+***Note: All data used and provided in this workshop is synthetic.***
+
 For this workshop we simulate working with data for a Health Claims Processing use case. We have structured data from our “relational” system, for 100 Claims. Information here includes data on the Patient, Claim, Provider, Payer, Procedure, and Diagnosis. 
 
 Along with this structured data, we have unstructured data in the form of doctors’ notes. These are pdf files that were stored in our SharePoint system that are related to these claims. 
