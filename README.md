@@ -32,6 +32,6 @@ Aura documentation is [available here](https://neo4j.com/docs/aura/).
 
 You can learn more about Neo4j Aura, Knowledge Graphs, Graph Data Science, and GenAI for FREE and hands-on at Neo4j's [Graph Academy](https://graphacademy.neo4j.com/). 
 
-The Document-Intelligence-Workshop-Claims.pdf contains a walkthrough of the actions to take in Aura to accomplish the tasks outline above.
+The Document-Intelligence-Workshop-Claims.pdf contains a walkthrough of the actions to take in Aura to accomplish the tasks outlined above.
 
 
